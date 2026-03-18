@@ -118,10 +118,41 @@ with c4:
 # Peso máximo
 weight_limit = 25.00  # Limite de peso da caixa em kg
 
-
 if item_length > 0 and item_width > 0 and item_height > 0 and item_weight > 0:  
     item_dims = [item_length, item_width, item_height]
     num_items, positions, total_weight = calculate_packing(box_dims, item_dims, box_weight, item_weight, weight_limit)
+    
+    st.markdown('<h1 style="text-align: center; font-size: 30px;">Capacidades em todas as caixas:</h1>', unsafe_allow_html=True)
+
+    # Tenta recuperar as variáveis. Se não existirem ou forem 0, define como None/0 para evitar NameError
+    item_dims = item_dims if 'item_dims' in locals() else [0, 0, 0]
+    item_weight = item_weight if 'item_weight' in locals() else 0
+    weight_limit = weight_limit if 'weight_limit' in locals() else 0
+
+    # Valida se as medidas são válidas (maiores que zero) antes de rodar o loop
+    if all(d > 0 for d in item_dims):
+        resultados_gerais = []
+
+        for nome_caixa, dados in caixas.items():
+            dims_caixa = [dados['Comprimento'], dados['Largura'], dados['Altura'] ]
+            peso_vazia = dados['Peso']
+            
+            # Executa o cálculo
+            n_itens, _, p_total = calculate_packing(dims_caixa, item_dims, peso_vazia, item_weight, weight_limit)
+
+            resultados_gerais.append({
+                "Perfil da Caixa": nome_caixa,
+                "Capacidade (itens)": n_itens,
+                "Peso Total (kg)": round(p_total, 2),
+                "Dimensões (AxLxC)": f"{dados['Altura']}x{dados['Largura']}x{dados['Comprimento']}"
+            })
+
+        df_resultados = pd.DataFrame(resultados_gerais)
+        st.dataframe(df_resultados, use_container_width=True, hide_index=True)
+    else:
+        # Mensagem de erro técnico
+        st.warning("Aguardando o preenchimento das dimensões do item para calcular as capacidades.")
+
     # Escrevendo a capacidade calculada 3D
     c4, c5 = st.columns(2)
     with c4:
@@ -132,35 +163,3 @@ if item_length > 0 and item_width > 0 and item_height > 0 and item_weight > 0:
 
     fig = draw_packing(box_dims, item_dims, positions)
     st.pyplot(fig, use_container_width=True)
-
-st.write("---")
-st.markdown('<h1 style="text-align: center; font-size: 30px;">Capacidades em todas as caixas:</h1>', unsafe_allow_html=True)
-
-# Tenta recuperar as variáveis. Se não existirem ou forem 0, define como None/0 para evitar NameError
-item_dims = item_dims if 'item_dims' in locals() else [0, 0, 0]
-item_weight = item_weight if 'item_weight' in locals() else 0
-weight_limit = weight_limit if 'weight_limit' in locals() else 0
-
-# Valida se as medidas são válidas (maiores que zero) antes de rodar o loop
-if all(d > 0 for d in item_dims):
-    resultados_gerais = []
-
-    for nome_caixa, dados in caixas.items():
-        dims_caixa = [dados['Comprimento'], dados['Largura'], dados['Altura'] ]
-        peso_vazia = dados['Peso']
-        
-        # Executa o cálculo
-        n_itens, _, p_total = calculate_packing(dims_caixa, item_dims, peso_vazia, item_weight, weight_limit)
-
-        resultados_gerais.append({
-            "Perfil da Caixa": nome_caixa,
-            "Capacidade (itens)": n_itens,
-            "Peso Total (kg)": round(p_total, 2),
-            "Dimensões (AxLxC)": f"{dados['Altura']}x{dados['Largura']}x{dados['Comprimento']}"
-        })
-
-    df_resultados = pd.DataFrame(resultados_gerais)
-    st.dataframe(df_resultados, use_container_width=True, hide_index=True)
-else:
-    # Mensagem de erro técnico
-    st.warning("Aguardando o preenchimento das dimensões do item para calcular as capacidades.")
