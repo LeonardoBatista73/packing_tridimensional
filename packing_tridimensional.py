@@ -4,6 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from itertools import product, combinations
 
+st.set_page_config(page_title='Packing tridimensional')
+
 # Título da pagina (interface streamlit)
 st.markdown('<h1 style="text-align: center; font-size: 30px;">📦 Packing tridimensional de produtos</h1>', unsafe_allow_html=True)
 st.write('___________')
