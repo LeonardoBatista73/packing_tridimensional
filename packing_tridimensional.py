@@ -150,7 +150,7 @@ if item_length > 0 and item_width > 0 and item_height > 0 and item_weight > 0:
             })
 
         df_resultados = pd.DataFrame(resultados_gerais)
-        st.dataframe(df_resultados, use_container_width=True, hide_index=True)
+        st.dataframe(df_resultados, hide_index=True)
     else:
         # Mensagem de erro técnico
         st.warning("Aguardando o preenchimento das dimensões do item para calcular as capacidades.")
@@ -164,4 +164,4 @@ if item_length > 0 and item_width > 0 and item_height > 0 and item_weight > 0:
         st.info(f"Peso total da caixa: **{total_weight:.2f} kg**")
 
     fig = draw_packing(box_dims, item_dims, positions)
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
